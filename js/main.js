@@ -15,11 +15,7 @@ iris.UI(
 			self.$Get("btnFavs").mousedown(_GetFavTwits);
 			_$txtSearch = self.$Get("txtSearch");
 		}
-
-		function _Greet () {
-			console.log("Hi " + self.Setting("name") + "!");
-		}
-				
+			
 		function _GetFavTwits(){
 			$.ajax({
 					url:"http://projects/twitfeed/twitfeed.php",
@@ -39,6 +35,7 @@ iris.UI(
 		}
 		
 		function _GenTwitElements(elements){
+			console.log("GetTwitElements");
 			var items = elements.split("\n");
 			items = items.filter(_CheckSize);
 			$.each(items, function(index, value){
@@ -52,12 +49,24 @@ iris.UI(
 			});
 		}
 		
+		function _AbortRequest(){
+			console.log("AbortRequest");
+			if(xhr != null) {
+				xhr.abort();
+				xhr = null;
+			}
+			allItems = new Array();
+			clearInterval(timer);
+			self.$Get("btnSearch").mousedown(_GetTwits);
+		}
+		
 		function _GetTwits() {
 			// Almacenamos la peticion para poder abotarla en cuanto
 			// se de a stop
 			xhr = new XMLHttpRequest();
     	xhr.open('GET', 'http://projects/twitfeed/twitfeed.php?action=getTwits&keyword='+_$txtSearch.val(), true);
     	xhr.send();
+    	self.$Get("btnSearch").mousedown(_AbortRequest);
     	
     	timer = window.setInterval(function() {
     		if (xhr == null) {
