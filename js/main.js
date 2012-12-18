@@ -6,13 +6,13 @@ iris.UI(
 		var timeInterval = 1000;
 		var allItems = new Array();
 		
-		var _$txtSearch;
+		var _$txtSearch, _$btnStart, _$btnStop, _$btnFavs;
 		
 		self.Create = function () {
-			console.log("UI Create");
 			self.Template("twitfeed/template/content.html");
-			self.$Get("btnSearch").mousedown(_GetTwits);
-			self.$Get("btnFavs").mousedown(_GetFavTwits);
+			(_$btnStart = self.$Get("btnStart")).mousedown(_GetTwits);
+			(_$btnStop  = self.$Get("btnStop") ).mousedown(_AbortRequest);
+			(_$btnFavs  = self.$Get("btnFavs") ).mousedown(_GetFavTwits);
 			_$txtSearch = self.$Get("txtSearch");
 		}
 			
@@ -22,6 +22,9 @@ iris.UI(
 					data: {action:"getFavTwits"},
 					type: "POST",
 					dataType:"json",
+					beforeStart: function(){
+						self.$Get("twit-container").html("");
+					},
 				  success: function(data){
 						$.each(data, function(index, item) {
 							self.InstanceUI("twit-container", "twitfeed/js/twititem.js", { "twit" : item, "fav": 1 });
@@ -35,7 +38,6 @@ iris.UI(
 		}
 		
 		function _GenTwitElements(elements){
-			console.log("GetTwitElements");
 			var items = elements.split("\n");
 			items = items.filter(_CheckSize);
 			$.each(items, function(index, value){
@@ -50,23 +52,34 @@ iris.UI(
 		}
 		
 		function _AbortRequest(){
-			console.log("AbortRequest");
+			// UI Management
+			_$btnStop.hide();
+			_$btnStart.show();
+			_$btnFavs.removeAttr("disabled");
+			_$txtSearch.removeAttr("disabled");
+			
+			
+			// Abort Handling
 			if(xhr != null) {
 				xhr.abort();
 				xhr = null;
 			}
 			allItems = new Array();
 			clearInterval(timer);
-			self.$Get("btnSearch").mousedown(_GetTwits);
 		}
 		
 		function _GetTwits() {
-			// Almacenamos la peticion para poder abotarla en cuanto
-			// se de a stop
+			// UI Management
+			_$btnStop.show();
+			_$btnStart.hide();
+			_$btnFavs.attr("disabled", "disabled");
+			_$txtSearch.attr("disabled", "disabled");
+			self.$Get("twit-container").html("");
+			
+			// Request
 			xhr = new XMLHttpRequest();
     	xhr.open('GET', 'http://projects/twitfeed/twitfeed.php?action=getTwits&keyword='+_$txtSearch.val(), true);
     	xhr.send();
-    	self.$Get("btnSearch").mousedown(_AbortRequest);
     	
     	timer = window.setInterval(function() {
     		if (xhr == null) {
@@ -87,11 +100,9 @@ iris.UI(
 		}
 	
 		self.Awake = function () {
-			console.log("UI Awake");
 		}
 		
 		self.Sleep = function () {
-			console.log("UI Sleep");
 		}
 	}
 );

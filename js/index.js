@@ -6,11 +6,9 @@ iris.Screen(
 		}
 
 		self.Awake = function () {
-			console.log("Screen Awake");
 		}
 		
 		self.Sleep = function () {
-			console.log("Screen Sleep");
 		}
 	}
 );
