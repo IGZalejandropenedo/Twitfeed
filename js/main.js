@@ -22,12 +22,12 @@ iris.UI(
 					data: {action:"getFavTwits"},
 					type: "POST",
 					dataType:"json",
-					beforeStart: function(){
-						self.$Get("twit-container").html("");
+					beforeSend: function(){
+						self.DestroyAllUIs("twit-container");
 					},
 				  success: function(data){
 						$.each(data, function(index, item) {
-							self.InstanceUI("twit-container", "twitfeed/js/twititem.js", { "twit" : item, "fav": 1 });
+							self.InstanceUI("twit-container", "twitfeed/js/twititem.js", { "twit" : $.extend(item, {"fav" : 1})})
 						});
 					}
 			});
@@ -45,7 +45,7 @@ iris.UI(
 					if(allItems.indexOf(value) == -1){
 						allItems.push(value);
 						var twit = JSON.parse(value);
-						self.InstanceUI("twit-container", "twitfeed/js/twititem.js", { "twit" : twit, "fav": 0 });
+						self.InstanceUI("twit-container", "twitfeed/js/twititem.js", { "twit" : $.extend(twit, {"fav" : 0})});
 					}
 				}
 			});
@@ -74,7 +74,8 @@ iris.UI(
 			_$btnStart.hide();
 			_$btnFavs.attr("disabled", "disabled");
 			_$txtSearch.attr("disabled", "disabled");
-			self.$Get("twit-container").html("");
+			//self.$Get("twit-container").html("");
+			self.DestroyAllUIs("twit-container");
 			
 			// Request
 			xhr = new XMLHttpRequest();
