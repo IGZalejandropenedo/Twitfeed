@@ -1,10 +1,25 @@
-<!DOCTYPE HTML>
+<!DOCTYPE HTML> 
 <html>
 <head>
 	<title>TwitFeed</title>
-	<script type="text/javascript" src="xmlhttprequest/XMLHttpRequest.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="./js/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+	<link href="./js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+	
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	
+	<script type="text/javascript" src="./js/xmlhttprequest/XMLHttpRequest.js"></script>
 	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
-	<script type='text/javascript' src='./js/iris-0.4.5.min.js'></script>
+	<script src="./js/bootstrap/js/bootstrap.min.js"></script>
+	<script type='text/javascript' src='./js/iris/iris-0.4.5.min.js'></script>
 	<script type='text/javascript'>
 		$(document).ready(
 			function () {
@@ -27,6 +42,7 @@
 				    return res;
 				  };
 				}
+				
 				// Define your welcome screen
 				iris.screen.WelcomeScreen("./twitfeed/js/index.js");
 			}
@@ -35,239 +51,3 @@
 </head>
 <body></body>
 </html>
-
-<!--!DOCTYPE html> 
-<html> 
-	<head> 
-		<title>TwitFeeder</title> 
-		<meta name="viewport" content="width=device-width, initial-scale=1"> 
-		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
-		<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
-		<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
-		<script type="text/javascript" src="xmlhttprequest/XMLHttpRequest.js"></script>
-	</head> 
-	<body> 
-	
-	<div data-role="page" id="main">
-		<div data-role="header">
-			<h1>TwitFeeder</h1>
-		</div>
-	
-		<div data-role="content">	
-			<div class="ui-grid-a">
-					<div class="ui-block-a">
-						<input type="search" name="search" id="search" value="" placeholder="Search..."/>
-					</div>
-					<div class="ui-block-b">
-						<select name="slide" id="slide" data-role="slider" disabled="true">
-							<option value="stop">Start</option>
-							<option value="start">Stop</option>
-						</select>
-					</div>
-			</div>
-			<div class="ui-grid-solo">
-						<button id="btnFav"> View Favourites</button>
-			</div>
-			
-			<div class="ui-grid-solo">
-				<ul data-role="listview" data-inset="true" data-theme='a' ></ul>
-			</div>
-		</div>
-		
-		<div data-role="footer" data-position="fixed">
-			<h4>IGZ</h4>
-		</div>
-	</div>
-	
-	<script type="text/javascript">
-		
-		// Tiempo entre requests
-		var xhr = null;
-		var timer = null;
-		var timeInterval = 1000;
-		var allItems = new Array();
-		
-		// Genera una cadena con el cuerpo del tweet
-		function genTwitBody(item){
-			return	"<li twitid='" + item["id"] + "'>" + 
-								"<img src='" + item["image"] + "' />" +
-							 	"<h1>" +
-							 		item["name"] + 
-							 	"</h1>" + 
-							 	"<span class='ui-li-aside'>" +
-							 		item["date"] + 
-							 	"</span>" +
-							 	"<p>" +
-							 		item["text"] + 
-							 	"</p>" + 
-							 	"<span countID='" + item["id"] + "' class='ui-li-count'>" + 
-							 	"0" + 
-							 	"</span>" + 
-							"</li>";
-		}
-		
-		function checkSize(element, index, array) {
-  		return (element.length > 0);
-		}
-		
-		function genTwitElements(elements){
-			var items = elements.split("\n");
-			items = items.filter(checkSize);
-			$.each(items, function(index, value){
-				if (value.length > 0) {
-					if(allItems.indexOf(value) == -1){
-						allItems.push(value);
-						var twit = JSON.parse(value);
-						// Obtenemos la cadena del tweet y refrescamos la lista
-						$("ul").append(genTwitBody(twit));
-					
-						$("[twitid]").off("click");
-						$("[twitid]").on("click",function() {
-							favTwit($(this).attr("twitid"), 1);
-						});
-					}
-				}
-			});
-			$("ul").listview("refresh");
-		}
-		
-		// Realiza la peticion ajax para obtener los tweets
-		function getTwits() {
-			// Almacenamos la peticion para poder abotarla en cuanto
-			// se de a stop
-			xhr = new XMLHttpRequest();
-    	xhr.open('GET', 'http://localhost/twitfeed/twitfeed.php?action=getTwits&keyword='+$("#search").val(), true);
-    	xhr.send();
-    	
-    	timer = window.setInterval(function() {
-    		if (xhr == null) {
-    			window.clearTimeout(timer);
-    		} else {
-	    		switch(xhr.readyState){
-	    			case(XMLHttpRequest.DONE): {
-	    				window.clearTimeout(timer);
-	    				break;
-	    			}
-	    			case(XMLHttpRequest.LOADING): {
-	    				genTwitElements(xhr.responseText);
-	    				break;
-	    			}
-	    		}
-	      }
-      }, timeInterval);	
-		}
-		
-		function favTwit(id, val) {
-			$.ajax({
-					url:"http://localhost/twitfeed/twitfeed.php",
-					data: {action:"favTwit", id: id, value: val},
-					type: "POST",
-					dataType:"json",
-					success: function(data){
-						if (data == 1){
-							$("[countID='" + id + "']").html(val);
-						}
-					}
-			});
-		}
-		
-		function getFavTwits(){
-			$.ajax({
-					url:"http://localhost/twitfeed/twitfeed.php",
-					data: {action:"getFavTwits"},
-					type: "POST",
-					dataType:"json",
-					beforeSend: function() {
-						$("ul").html("");
-					},
-					success: function(data){
-						$.each(data, function(index, item) {
-							// Obtenemos la cadena del tweet y refrescamos la lista
-							$("ul").append(genTwitBody(item));
-							$("[countID]").html("1");
-							
-							$("[twitid]").off("click");
-							$("[twitid]").on("click",function() {
-								favTwit($(this).attr("twitid"), 0);
-								$(this).hide();
-								$("ul").listview("refresh");
-							});
-							$("ul").listview("refresh");
-						});
-					}
-			});
-		}
-		
-		// Activamos o desactivamos el boton segun si hay texto o no
-		// en el campo de busqueda
-		function updateSliderStatus(text, slider){
-			if(text.length > 0){
-				slider.slider("enable");
-			} 
-			else {
-				slider.slider("disable");
-			}
-		}
-			
-		$(document).bind('pageinit', function(){
-			if (!Array.prototype.filter) {
-			  Array.prototype.filter = function(fun /*, thisp*/) {
-			    var len = this.length;
-			    if (typeof fun != "function")
-			      throw new TypeError();
-			
-			    var res = new Array();
-			    var thisp = arguments[1];
-			    for (var i = 0; i < len; i++) {
-			      if (i in this) {
-			        var val = this[i]; // in case fun mutates this
-			        if (fun.call(thisp, val, i, this))
-			          res.push(val);
-			      }
-			    }
-			
-			    return res;
-			  };
-			}
-			
-			// Cuando pulsamos una tecla comprobamos si hay texto en la campo
-			// de busqueda para activar o desactivar el boton 
-			$("#search").keyup(function(event, ui){
-				updateSliderStatus($(this).val(), $("#slide"));
-			});
-			
-			// Cuando el contenido del campo de busqueda cambia, comprobamos 
-			// si hay texto para activar o desactivar el boton 
-			$("#search").change(function(event, ui){
-				updateSliderStatus($(this).val(), $("#slide"));
-			});
-			
-			// Cuando el boton se activa o desactiva lanzamos un temporizador para
-			// ejecutar peticiones constantemente
-			$("#slide").on('slidestop', function(event) {
-				if($(this).val() == "start") {
-					$("ul").html("");
-					$("#search").textinput("disable");
-					$("#btnFav").button("disable");
-					getTwits();
-				} 
-				else if($(this).val() == "stop") {
-					$("#search").textinput("enable");
-					$("#btnFav").button("enable");
-					if(xhr != null) {
-						xhr.abort();
-						xhr = null;
-					}
-					allItems = new Array();
-					clearInterval(timer)
-				}
-			});
-			
-			$("#btnFav").click(function(){
-				getFavTwits();				
-			});
-		});
-	</script>
-	
-	</body>
-</html-->
