@@ -17,6 +17,7 @@ iris.UI(
 		}
 			
 		function _GetFavTwits(e){
+			alert("bla");
 			e.preventDefault();
 			$.ajax({
 					url:"http://projects/twitfeed/twitfeed.php",
