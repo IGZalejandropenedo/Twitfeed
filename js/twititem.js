@@ -11,8 +11,6 @@ iris.UI(function(self) {
 		
 		_$fav.click(_unfavItem);
 		_$nofav.click(_favItem);
-		
-		
 	};
 	
 	function _changeItem(id, value){
@@ -37,7 +35,6 @@ iris.UI(function(self) {
 	
 	function _favItem(){
 		_changeItem(_$nofav.attr("twit"), 1);
-		
 	}
 	
 	function _unfavItem() {
