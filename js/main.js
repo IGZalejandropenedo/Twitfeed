@@ -16,7 +16,8 @@ iris.UI(
 			_$txtSearch = self.$Get("txtSearch");
 		}
 			
-		function _GetFavTwits(){
+		function _GetFavTwits(e){
+			e.preventDefault();
 			$.ajax({
 					url:"http://projects/twitfeed/twitfeed.php",
 					data: {action:"getFavTwits"},
@@ -68,7 +69,8 @@ iris.UI(
 			clearInterval(timer);
 		}
 		
-		function _GetTwits() {
+		function _GetTwits(e) {
+			e.preventDefault();
 			// UI Management
 			_$btnStop.show();
 			_$btnStart.hide();
