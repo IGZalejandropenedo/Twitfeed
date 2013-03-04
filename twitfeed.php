@@ -3,10 +3,10 @@ set_time_limit(0);
 
 class TwitFeed {
 	
-	// Usuario y contraseña
+	// Usuario y contraseï¿½a
 	// Seria mejor usar oAuth
-	private static $user = "igz_twitfeed";
-	private static $pass = "valha666";
+	private static $user = "";
+	private static $pass = "";
 	private static $exit = FALSE;
 	
 	// El socket que usaremos para conectar al servicio
@@ -19,15 +19,15 @@ class TwitFeed {
 		return (self::$socket);
 	}
 	
-	// Realizamos la petición segun la palabra indicada.
+	// Realizamos la peticiï¿½n segun la palabra indicada.
 	public static function request($keyword) {
 		
-		// Generamos la cadena necesaria para la petición
+		// Generamos la cadena necesaria para la peticiï¿½n
 		$request = "GET /1/statuses/filter.json?" . http_build_query(array('track' => $keyword)) . " HTTP/1.1\r\n";
 		$request .= "Host: stream.twitter.com\r\n";
 		$request .= "Authorization: Basic " . base64_encode(self::$user . ':' . self::$pass) . "\r\n\r\n";
 		
-		// Enviamos la petición
+		// Enviamos la peticiï¿½n
 		fwrite(self::$socket, $request);
 		
 		// Ejecutamos el codigo indefinidamente, el metodo handleShutdown se encargara de terminar el script
@@ -92,7 +92,7 @@ class TwitFeed {
 		self::$exit = TRUE;
 	}
 	
-	// Conectamos a la base de datos y almacenamos la información obtenida.
+	// Conectamos a la base de datos y almacenamos la informaciï¿½n obtenida.
 	private static function saveData($keyword, $data) {
 		if(strlen($data) > 2){
 			self::connectDB();
@@ -102,7 +102,7 @@ class TwitFeed {
 		return null;
 	}
 	
-	// Saca la información relevante de lo que nos devuelve Twitter
+	// Saca la informaciï¿½n relevante de lo que nos devuelve Twitter
 	private static function extract_data($id, $keyword, $data){
 		return array(
 			"id" 		=> $id,
